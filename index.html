@@ -1,92 +1,142 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
-@import "tailwindcss";
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>滑板攝影包衝擊緩衝力學計算器</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { background-color: #0B0B0F; color: #F3F4F6; }
+        .glow-purple { box-shadow: 0 0 20px rgba(157, 78, 221, 0.3); }
+        .glow-red { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); animation: pulse 1.5s infinite; }
+        .glow-green { box-shadow: 0 0 25px rgba(56, 176, 0, 0.6); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center font-sans">
 
-@theme {
-  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-}
+    <div class="max-w-5xl w-full bg-[#121218] border border-zinc-800 rounded-xl p-6 md:p-8 glow-purple">
+        <header class="mb-8 border-b border-zinc-800 pb-4">
+            <h1 class="text-3xl font-black tracking-wider text-[#9D4EDD]">SKATE BAG MECHANICS</h1>
+            <p class="text-xs text-zinc-500 tracking-widest mt-1">滑板攝影包衝擊緩衝力學計算器 // 北科工設期中火力展示</p>
+        </header>
 
-@layer utilities {
-  /* Custom Glowing Effects */
-  .glow-purple {
-    text-shadow: 0 0 10px rgba(157, 78, 221, 0.6), 0 0 20px rgba(157, 78, 221, 0.4);
-  }
-  .glow-green {
-    text-shadow: 0 0 10px rgba(56, 176, 0, 0.6), 0 0 20px rgba(56, 176, 0, 0.4);
-  }
-  .glow-red {
-    text-shadow: 0 0 10px rgba(239, 68, 68, 0.6), 0 0 20px rgba(239, 68, 68, 0.4);
-  }
-  
-  .border-glow-purple {
-    box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
-  }
-  .border-glow-green {
-    box-shadow: 0 0 15px rgba(56, 176, 0, 0.4);
-  }
-  .border-glow-red {
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-  }
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">器材快捷預設 (Presets)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setPreset(1.2)" class="p-2 text-left text-xs bg-zinc-900 border border-zinc-800 rounded hover:border-[#9D4EDD] transition">
+                            <div class="font-bold text-zinc-300">POV 輕裝組</div>
+                            <div class="text-zinc-500 text-[10px]">1.2 kg // GoPro</div>
+                        </button>
+                        <button onclick="setPreset(2.8)" class="p-2 text-left text-xs bg-zinc-900 border border-zinc-800 rounded hover:border-[#9D4EDD] transition">
+                            <div class="font-bold text-zinc-300">街頭寫真組</div>
+                            <div class="text-zinc-500 text-[10px]">2.8 kg // Fujifilm</div>
+                        </button>
+                        <button onclick="setPreset(5.2)" class="p-2 text-left text-xs bg-zinc-900 border border-[#9D4EDD] rounded hover:bg-zinc-800 transition">
+                            <div class="font-bold text-[#9D4EDD]">傳奇 VX 神機</div>
+                            <div class="text-zinc-400 text-[10px]">5.2 kg // VX1000</div>
+                        </button>
+                        <button onclick="setPreset(8.5)" class="p-2 text-left text-xs bg-zinc-900 border border-zinc-800 rounded hover:border-[#9D4EDD] transition">
+                            <div class="font-bold text-zinc-300">商業大片組</div>
+                            <div class="text-zinc-500 text-[10px]">8.5 kg // RED 8K</div>
+                        </button>
+                    </div>
+                </div>
 
-  /* Custom pattern backgrounds */
-  .grid-pattern {
-    background-size: 24px 24px;
-    background-image: 
-      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  }
+                <div class="space-y-4 pt-2 border-t border-zinc-900">
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-zinc-400">攝影包總重量 (Weight)</span>
+                            <span class="text-[#9D4EDD]" id="weightVal">5.2 kg</span>
+                        </div>
+                        <input type="range" id="weight" min="1" max="15" step="0.1" value="5.2" oninput="calculate()" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#9D4EDD]">
+                    </div>
 
-  .scanline-overlay {
-    background: linear-gradient(
-      rgba(18, 16, 16, 0) 50%, 
-      rgba(0, 0, 0, 0.25) 50%
-    );
-    background-size: 100% 4px;
-  }
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-zinc-400">墜落高度 (Height)</span>
+                            <span class="text-[#9D4EDD]" id="heightVal">1.5 m</span>
+                        </div>
+                        <input type="range" id="height" min="0.5" max="5" step="0.1" value="1.5" oninput="calculate()" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#9D4EDD]">
+                    </div>
 
-  /* Keyframe animations */
-  @keyframes vibrate {
-    0% { transform: translate(0, 0); }
-    10% { transform: translate(-2px, -2px); }
-    20% { transform: translate(2px, -2px); }
-    30% { transform: translate(-2px, 2px); }
-    40% { transform: translate(2px, 2px); }
-    50% { transform: translate(-1px, -1px); }
-    60% { transform: translate(1px, -1px); }
-    70% { transform: translate(-1px, 1px); }
-    80% { transform: translate(1px, 1px); }
-    90% { transform: translate(0, 0); }
-    100% { transform: translate(0, 0); }
-  }
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-zinc-400">緩衝墊厚度 (Padding)</span>
+                            <span class="text-[#9D4EDD]" id="paddingVal">5.0 cm</span>
+                        </div>
+                        <input type="range" id="padding" min="1" max="15" step="0.5" value="5.0" oninput="calculate()" class="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#9D4EDD]">
+                    </div>
+                </div>
+            </div>
 
-  @keyframes pulse-fast {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
+            <div id="resultBox" class="flex flex-col justify-between p-6 bg-zinc-900/50 border border-zinc-800 rounded-lg transition-all duration-300">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block mb-1">IMPACT FORCE</span>
+                    <div class="text-5xl font-black tracking-tight text-white mb-4"><span id="forceResult">1530</span> <span class="text-sm font-normal text-zinc-500">N</span></div>
+                    
+                    <div id="statusLabel" class="inline-block px-3 py-1.5 rounded text-xs font-black tracking-wider uppercase"></div>
+                </div>
 
-  .vibrate-active {
-    animation: vibrate 0.3s linear infinite;
-  }
+                <div class="mt-8 border border-zinc-800/60 rounded p-4 bg-[#0B0B0F] relative overflow-hidden h-32 flex items-center justify-center">
+                    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f1f2e_1px,transparent_1px),linear-gradient(to_bottom,#1f1f2e_1px,transparent_1px)] bg-[size:16px_16px] opacity-20"></div>
+                    <div id="visualBag" class="w-16 h-16 bg-zinc-800 border-2 border-[#9D4EDD] flex items-center justify-center font-black text-[10px] text-zinc-400 rounded transition-all duration-200">
+                        BAG
+                    </div>
+                    <div id="groundLine" class="absolute bottom-4 left-4 right-4 h-[2px] bg-zinc-700"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  .pulse-fast {
-    animation: pulse-fast 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-}
+    <script>
+        function setPreset(weight) {
+            document.getElementById('weight').value = weight;
+            calculate();
+        }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0B0B0F;
-}
-::-webkit-scrollbar-thumb {
-  background: #1F1F2E;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #9D4EDD;
-}
+        function calculate() {
+            const w = parseFloat(document.getElementById('weight').value);
+            const h = parseFloat(document.getElementById('height').value);
+            const p = parseFloat(document.getElementById('padding').value);
 
+            // 更新數值顯示
+            document.getElementById('weightVal').innerText = w.toFixed(1) + ' kg';
+            document.getElementById('heightVal').innerText = h.toFixed(1) + ' m';
+            document.getElementById('paddingVal').innerText = p.toFixed(1) + ' cm';
+
+            // 算式：F = (m * g * h) / (d_m)
+            const g = 9.81;
+            const d = p / 100; // 公分換算成公尺
+            const force = (w * g * h) / d;
+
+            document.getElementById('forceResult').innerText = Math.round(force);
+
+            const resultBox = document.getElementById('resultBox');
+            const statusLabel = document.getElementById('statusLabel');
+            const visualBag = document.getElementById('visualBag');
+
+            // 動態視覺回饋 (高度越高，包包在圖解裡位置越高)
+            visualBag.style.transform = `translateY(-${h * 8}px)`;
+
+            // 判定機制 (超過 4500 牛頓就碎裂)
+            if (force > 4500) {
+                resultBox.className = "flex flex-col justify-between p-6 bg-red-950/20 border border-red-900 rounded-lg transition-all duration-300 glow-red";
+                statusLabel.className = "inline-block px-3 py-1.5 bg-red-600 text-white text-xs font-black tracking-wider uppercase rounded";
+                statusLabel.innerText = "⚠️ 衝擊過大：器材碎裂，準備吃土！";
+                visualBag.className = "w-16 h-16 bg-zinc-900 border-2 border-red-500 flex items-center justify-center font-black text-[10px] text-red-500 rounded";
+            } else {
+                resultBox.className = "flex flex-col justify-between p-6 bg-zinc-900/50 border border-zinc-800 rounded-lg transition-all duration-300 glow-green";
+                statusLabel.className = "inline-block px-3 py-1.5 bg-[#38B000] text-black text-xs font-black tracking-wider uppercase rounded";
+                statusLabel.innerText = "✅ 緩衝有效：VX1000 完美存活，flow 依舊！";
+                visualBag.className = "w-16 h-16 bg-zinc-900 border-2 border-[#38B000] flex items-center justify-center font-black text-[10px] text-[#38B000] rounded";
+            }
+        }
+
+        // 初始化計算
+        calculate();
+    </script>
+</body>
+</html>
